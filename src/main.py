@@ -30,7 +30,39 @@ def main(page: ft.Page):
         await anchor.close_view()
         handle_submit(e.control.content)
 
+    current_tile = -1
+
+    async def on_keyboard(e: ft.KeyboardEvent):
+        nonlocal current_tile
+        if e.ctrl:
+            if e.key.lower() == "n" or e.key == "Arrow Down":
+                current_tile += 1
+                if current_tile == len(anchor.controls):
+                    current_tile = 0
+                hover_event = ft.ControlEvent(
+                    name="hover_down",
+                    control=anchor.controls[current_tile],
+                )
+                await handle_tile_hover(hover_event)
+
+            elif e.key.lower() == "p" or e.key == "Arrow Up":
+                if current_tile == -1 or current_tile == 0:
+                    current_tile = len(anchor.controls)
+                current_tile -= 1
+                print(current_tile)
+                hover_event = ft.ControlEvent(
+                    name="hover_up",
+                    control=anchor.controls[current_tile],
+                )
+                await handle_tile_hover(hover_event)
+
+            elif e.key.lower() == "f":
+                await anchor.open_view()
+
     async def handle_tile_hover(e: ft.Event[ft.ListTile]):
+        for tile in anchor.controls:
+            tile.bgcolor = ft.Colors.RED
+            tile.content.color = ft.Colors.BLUE
         e.control.bgcolor = (
             ft.Colors.BLUE if e.control.bgcolor == ft.Colors.RED else ft.Colors.RED
         )
@@ -58,6 +90,7 @@ def main(page: ft.Page):
     async def handle_tap(e: ft.Event[ft.SearchBar]):
         await anchor.open_view()
 
+    page.on_keyboard_event = on_keyboard
     page.add(
         anchor := ft.SearchBar(
             view_elevation=4,
