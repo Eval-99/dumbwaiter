@@ -75,6 +75,8 @@ def main(page: ft.Page):
         anchor.value = e.control.content.value
 
     async def handle_change(e: ft.Event[ft.SearchBar]):
+        nonlocal current_tile
+        current_tile = -1
         query = e.control.value.strip().lower()
         matching = (
             [color for color in colors if query in color.lower()] if query else colors
