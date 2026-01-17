@@ -18,7 +18,7 @@ def main(page: ft.Page):
     def build_tiles(items: list[str]) -> list[ft.Control]:
         return [
             ft.Container(
-                content=ft.Text(item, color=ft.Colors.BLUE),
+                content=ft.Text(item, color=ft.Colors.BLUE),  # ty:ignore[invalid-argument-type]
                 on_click=handle_tile_click,
                 on_hover=handle_tile_hover,
                 bgcolor=ft.Colors.RED,
@@ -26,9 +26,9 @@ def main(page: ft.Page):
             for item in items
         ]
 
-    async def handle_tile_click(e: ft.Event[ft.ListTile]):
+    async def handle_tile_click(e: ft.Event[ft.Container]):
         await anchor.close_view()
-        handle_submit(e.control.content)
+        handle_submit(e.control)
 
     current_tile = -1
 
@@ -59,20 +59,20 @@ def main(page: ft.Page):
             elif e.key.lower() == "f":
                 await anchor.open_view()
 
-    async def handle_tile_hover(e: ft.Event[ft.ListTile]):
+    async def handle_tile_hover(e: ft.Event[ft.Container] | ft.Event[ft.BaseControl]):
         for tile in anchor.controls:
-            tile.bgcolor = ft.Colors.RED
-            tile.content.color = ft.Colors.BLUE
-        e.control.bgcolor = (
-            ft.Colors.BLUE if e.control.bgcolor == ft.Colors.RED else ft.Colors.RED
+            tile.bgcolor = ft.Colors.RED  # ty:ignore[unresolved-attribute]
+            tile.content.color = ft.Colors.BLUE  # ty:ignore[unresolved-attribute]
+        e.control.bgcolor = (  # ty:ignore[unresolved-attribute]
+            ft.Colors.BLUE if e.control.bgcolor == ft.Colors.RED else ft.Colors.RED  # ty:ignore[unresolved-attribute]
         )
-        e.control.content.color = (
+        e.control.content.color = (  # ty:ignore[unresolved-attribute]
             ft.Colors.RED
-            if e.control.content.color == ft.Colors.BLUE
+            if e.control.content.color == ft.Colors.BLUE  # ty:ignore[unresolved-attribute]
             else ft.Colors.BLUE
         )
         e.control.update()
-        anchor.value = e.control.content.value
+        anchor.value = e.control.content.value  # ty:ignore[unresolved-attribute]
 
     async def handle_change(e: ft.Event[ft.SearchBar]):
         nonlocal current_tile
@@ -83,11 +83,11 @@ def main(page: ft.Page):
         )
         anchor.controls = build_tiles(matching)
 
-    def handle_submit(e: ft.Event[ft.SearchBar]):
+    def handle_submit(e: ft.Event[ft.SearchBar] | ft.Container):
         if e.data:
             print(f"Submit: {e.data}")
         else:
-            print(f"Submit: {e.value}")
+            print(f"Submit: {e.content.value}")  # ty:ignore[unresolved-attribute, possibly-missing-attribute]
 
     async def handle_tap(e: ft.Event[ft.SearchBar]):
         await anchor.open_view()
