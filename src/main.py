@@ -49,7 +49,6 @@ def main(page: ft.Page):
                 if current_tile == -1 or current_tile == 0:
                     current_tile = len(anchor.controls)
                 current_tile -= 1
-                print(current_tile)
                 hover_event = ft.ControlEvent(
                     name="hover_up",
                     control=anchor.controls[current_tile],
@@ -61,18 +60,22 @@ def main(page: ft.Page):
 
     async def handle_tile_hover(e: ft.Event[ft.Container] | ft.Event[ft.BaseControl]):
         for tile in anchor.controls:
-            tile.bgcolor = ft.Colors.RED  # ty:ignore[unresolved-attribute]
-            tile.content.color = ft.Colors.BLUE  # ty:ignore[unresolved-attribute]
-        e.control.bgcolor = (  # ty:ignore[unresolved-attribute]
-            ft.Colors.BLUE if e.control.bgcolor == ft.Colors.RED else ft.Colors.RED  # ty:ignore[unresolved-attribute]
-        )
-        e.control.content.color = (  # ty:ignore[unresolved-attribute]
-            ft.Colors.RED
-            if e.control.content.color == ft.Colors.BLUE  # ty:ignore[unresolved-attribute]
-            else ft.Colors.BLUE
-        )
-        e.control.update()
-        anchor.value = e.control.content.value  # ty:ignore[unresolved-attribute]
+            if isinstance(tile, ft.Container) and isinstance(tile.content, ft.Text):
+                tile.bgcolor = ft.Colors.RED
+                tile.content.color = ft.Colors.BLUE
+        if isinstance(e.control, ft.Container) and isinstance(
+            e.control.content, ft.Text
+        ):
+            e.control.bgcolor = (
+                ft.Colors.BLUE if e.control.bgcolor == ft.Colors.RED else ft.Colors.RED
+            )
+            e.control.content.color = (
+                ft.Colors.RED
+                if e.control.content.color == ft.Colors.BLUE
+                else ft.Colors.BLUE
+            )
+            e.control.update()
+            anchor.value = e.control.content.value
 
     async def handle_change(e: ft.Event[ft.SearchBar]):
         nonlocal current_tile
