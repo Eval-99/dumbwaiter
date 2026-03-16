@@ -90,7 +90,7 @@ def main(page: ft.Page):
         if e.data:
             print(f"Submit: {e.data}")
         else:
-            print(f"Submit: {e.content.value}")  # ty:ignore[unresolved-attribute, possibly-missing-attribute]
+            print(f"Submit: {e.content.value}")  # ty:ignore[unresolved-attribute]
 
     async def handle_tap(e: ft.Event[ft.SearchBar]):
         await anchor.open_view()
